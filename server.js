@@ -50,7 +50,18 @@ app.get('/todos/:id', function(req, res){
 
 //POST /todos 
 app.post('/todos', function(req, res){
-	var body = req.body;
+	var body = req.body; // use _.pick to only description and completed.
+
+
+	if (!_.isBoolean(body.completed) || !_.isString(body.description) || body.description.trim().length === 0) {
+		return res.status(400).send();
+	} 
+    
+    var body = _.pick(body, 'description','completed');
+    body.description = body.description.trim(); 
+	// set body.description to be trimmed value
+
+
 	//add id field
 	body.id = todoNextId;
 	todoNextId += 1;
