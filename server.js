@@ -16,12 +16,13 @@ app.get('/', function(req, res){
 	res.end();
 });
 
-//GET //todos 
+//GET //todos?completed=false&q=work 
 app.get('/todos', function(req, res){
 	var queryParams = req.query;
-
+	var keyWord = queryParams.q;
 	var filteredTodos = todos;
 
+	var matchedDescription;
 	if(queryParams.hasOwnProperty('completed') && queryParams.completed === 'true'){
 		filteredTodos = _.where(filteredTodos, {completed : true});
 	} else if (queryParams.hasOwnProperty('completed') && queryParams.completed === 'false'){
@@ -30,6 +31,20 @@ app.get('/todos', function(req, res){
 	// if has property && completed === 'true'
 	// filteredTodos = _.where(filteredTodos, ?);
 	// else if has prop && completed if 'false'
+
+	//"Go to work on Saturday".indexOf('work');
+	if(queryParams.hasOwnProperty('q') && queryParams.q.length > 0) {
+		filteredTodos = _.filter(filteredTodos, function(todo){
+				// if(element.description.indexOf(keyWord) !== -1){
+				// 	return element;
+				// } else {
+				// 	return {"no element found":"element is not there"};
+				// }
+				return todo.description.toLowerCase().indexOf(queryParams.q.toLowerCase()) > -1;			
+		});
+	} else {
+		return res.status(404).send();
+	}
 
 	res.json(filteredTodos);
 	res.end();
