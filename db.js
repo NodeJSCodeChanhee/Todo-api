@@ -15,7 +15,6 @@ if(env === 'production'){
 	});
 }
 
-var 
 
 var db = {};
 
