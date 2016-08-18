@@ -257,28 +257,33 @@ app.post('/users', function(req, res){
 app.post('/users/login', function(req, res){
 	var body = _.pick(req.body, 'email', 'password');
 
-	var where = {};
+	db.user.authenticate(body).then(function(user){
+		res.json(user.toPublicJSON());
+	}, function(){
+		res.status(401).send();
+	});
+	// var where = {};
 
-	if(typeof body.email !== 'string' || typeof body.password !== 'string'){
-		return res.status(400).send();
+	// if(typeof body.email !== 'string' || typeof body.password !== 'string'){
+	// 	return res.status(400).send();
 		
-	}	
+	// }	
 
 	
 
-	db.user.findOne({
-		where : {
-			email : body.email
-		}
-	}).then(function(user){
-		if(!user || !bcrypt.compareSync(body.password, user.get('password_hash'))){
-			return res.status(401).send();
-		}
+	// db.user.findOne({
+	// 	where : {
+	// 		email : body.email
+	// 	}
+	// }).then(function(user){
+	// 	if(!user || !bcrypt.compareSync(body.password, user.get('password_hash'))){
+	// 		return res.status(401).send();
+	// 	}
 
-		res.json(user.toPublicJSON());
-	}, function(e){
-		res.status(500).send();
-	});
+	// 	res.json(user.toPublicJSON());
+	// }, function(e){
+	// 	res.status(500).send();
+	// });
 
     
 
