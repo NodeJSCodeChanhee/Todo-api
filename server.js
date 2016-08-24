@@ -54,39 +54,6 @@ app.get('/todos', middleware.requireAuthentication, function(req, res) {
 		res.status(500).send();
 	});
 
-	// var keyWord = queryParams.q;
-	// var filteredTodos = todos;
-
-	// var matchedDescription;
-	// if (queryParams.hasOwnProperty('completed') && queryParams.completed === 'true') {
-	// 	filteredTodos = _.where(filteredTodos, {
-	// 		completed: true
-	// 	});
-	// } else if (queryParams.hasOwnProperty('completed') && queryParams.completed === 'false') {
-	// 	filteredTodos = _.where(filteredTodos, {
-	// 		completed: false
-	// 	});
-	// }
-	// // if has property && completed === 'true'
-	// // filteredTodos = _.where(filteredTodos, ?);
-	// // else if has prop && completed if 'false'
-
-	// //"Go to work on Saturday".indexOf('work');
-	// if (queryParams.hasOwnProperty('q') && queryParams.q.length > 0) {
-	// 	filteredTodos = _.filter(filteredTodos, function(todo) {
-	// 		// if(element.description.indexOf(keyWord) !== -1){
-	// 		// 	return element;
-	// 		// } else {
-	// 		// 	return {"no element found":"element is not there"};
-	// 		// }
-	// 		return todo.description.toLowerCase().indexOf(queryParams.q.toLowerCase()) > -1;
-	// 	});
-	// } else {
-	// 	return res.status(404).send();
-	// }
-
-	// res.json(filteredTodos);
-	// res.end();
 });
 //GET /todos/: id
 
@@ -103,19 +70,6 @@ app.get('/todos/:id', middleware.requireAuthentication, function(req, res) {
 		res.status(500).send();
 	});
 
-	// var matchedTodo = _.findWhere(todos, {
-	// 	id: todoId
-	// });
-
-
-	// if (matchedTodo) {
-	// 	res.json(matchedTodo);
-	// } else {
-	// 	res.status(404).send();
-	// }
-
-	// res.send('Asking for todos with id of ' + req.params.id);
-	// res.end();
 });
 
 
@@ -124,7 +78,12 @@ app.post('/todos', middleware.requireAuthentication, function(req, res) {
 	var body = _.pick(req.body, 'description', 'completed'); // use _.pick to only description and completed.
 
 	db.todo.create(body).then(function(todo) {
-		res.json(todo.toJSON());
+		//res.json(todo.toJSON());
+		req.user.addTodo(todo).then(function(){
+			return todo.reload();
+		}).then(function (todo){
+			res.json(todo.toJSON());
+		});
 	}, function(e) {
 		res.status(400).json(e);
 	});
